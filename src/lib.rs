@@ -30,13 +30,16 @@ pub extern "C" fn Agent_OnLoad(
 
         let mut jvmenv = std::ptr::null_mut();
         println!("*{:?}",jvmenv);
-        ((*(*vm)).GetEnv.unwrap())(vm,&mut jvmenv,sys::JVMTI_VERSION_1_2 as i32);
+        ((*(*vm)).GetEnv.unwrap())(vm,&mut jvmenv,sys::JVMTI_VERSION as i32);
         println!("*{:?}",jvmenv);
         let mut jvmenv = jvmenv as sys::jvmtiEnv;
         println!("*{:?}",*jvmenv);
         println!("===========================");
         let js = std::ptr::null_mut();
-        ((*jvmenv).SetEventNotificationMode.unwrap())(&mut jvmenv,sys::jvmtiEventMode_JVMTI_ENABLE,sys::jvmtiEvent_JVMTI_EVENT_CLASS_LOAD, js);
+        let set_event_notification_mode = (*jvmenv).SetEventNotificationMode.unwrap();
+        println!("*{:?}",set_event_notification_mode);
+
+        set_event_notification_mode(&mut jvmenv,sys::jvmtiEventMode_JVMTI_ENABLE,sys::jvmtiEvent_JVMTI_EVENT_CLASS_LOAD, js);
         println!("*{:?}",*jvmenv);
 
         //let mut capability : sys::jvmtiCapabilities = Default::default();
