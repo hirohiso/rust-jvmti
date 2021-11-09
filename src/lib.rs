@@ -1,4 +1,4 @@
-use std::ffi::{CStr, c_void};
+use std::ffi::CStr;
 
 #[allow(non_upper_case_globals)]
 #[allow(non_camel_case_types)]
@@ -25,11 +25,25 @@ pub extern "C" fn Agent_OnLoad(
         }else{
             println!("null");
         }
-        let mut jvmenv = std::ptr::null_mut();
-        ((*(*vm)).GetEnv.unwrap())(vm,&mut jvmenv,sys::JVMTI_VERSION_1_0 as i32);
+        println!("*{:?}",vm);
+        println!("*{:?}",**vm);
 
+        let mut jvmenv = std::ptr::null_mut();
+        println!("*{:?}",jvmenv);
+        ((*(*vm)).GetEnv.unwrap())(vm,&mut jvmenv,sys::JVMTI_VERSION_1_2 as i32);
+        println!("*{:?}",jvmenv);
         let mut jvmenv = jvmenv as sys::jvmtiEnv;
-        ((*jvmenv).SetEventCallbacks.unwrap())(&mut jvmenv,std::ptr::null_mut(),0);
+        println!("*{:?}",*jvmenv);
+        println!("===========================");
+        let js = std::ptr::null_mut();
+        ((*jvmenv).SetEventNotificationMode.unwrap())(&mut jvmenv,sys::jvmtiEventMode_JVMTI_ENABLE,sys::jvmtiEvent_JVMTI_EVENT_CLASS_LOAD, js);
+        println!("*{:?}",*jvmenv);
+
+        //let mut capability : sys::jvmtiCapabilities = Default::default();
+        //((*jvmenv).AddCapabilities.unwrap())(&mut jvmenv,&mut capability);
+
+
+        //((*jvmenv).SetEventCallbacks.unwrap())(&mut jvmenv,std::ptr::null_mut(),0);
 
     }
     println!("Hello, JVMTI!");
