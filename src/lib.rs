@@ -1,4 +1,4 @@
-use std::ffi::CStr;
+use std::{ffi::CStr, fmt::Debug};
 
 #[allow(non_upper_case_globals)]
 #[allow(non_camel_case_types)]
@@ -25,29 +25,31 @@ pub extern "C" fn Agent_OnLoad(
         }else{
             println!("null");
         }
-        println!("*{:?}",vm);
-        println!("*{:?}",**vm);
 
         let mut jvmenv = std::ptr::null_mut();
-        println!("*{:?}",jvmenv);
         ((*(*vm)).GetEnv.unwrap())(vm,&mut jvmenv,sys::JVMTI_VERSION as i32);
-        println!("*{:?}",jvmenv);
-        let mut jvmenv = jvmenv as *mut sys::jvmtiEnv;
-        println!("*{:?}",jvmenv );
-        println!("*{:?}",**jvmenv );
+        let jvmenv = jvmenv as *mut sys::jvmtiEnv;
+
         println!("===========================");
         let js = std::ptr::null_mut();
         let set_event_notification_mode = (**jvmenv).SetEventNotificationMode.unwrap();
-        println!("*{:?}",set_event_notification_mode);
-        println!("*{:?}",&mut jvmenv);
+
+        set_event_notification_mode(jvmenv,sys::jvmtiEventMode_JVMTI_ENABLE,sys::jvmtiEvent_JVMTI_EVENT_CLASS_PREPARE, js);
         set_event_notification_mode(jvmenv,sys::jvmtiEventMode_JVMTI_ENABLE,sys::jvmtiEvent_JVMTI_EVENT_CLASS_LOAD, js);
-        println!("*{:?}",*jvmenv);
 
-        //let mut capability : sys::jvmtiCapabilities = Default::default();
-        //((*jvmenv).AddCapabilities.unwrap())(&mut jvmenv,&mut capability);
+        let mut capability  = sys::jvmtiCapabilities{
+            ..Default::default()
+        };
+        capability.set_can_get_source_file_name(1);
+        
+        ((**jvmenv).AddCapabilities.unwrap())(jvmenv,&capability);
 
-
-        //((*jvmenv).SetEventCallbacks.unwrap())(&mut jvmenv,std::ptr::null_mut(),0);
+        let callbacks = sys::jvmtiEventCallbacks{
+            ClassPrepare : Some(class_prepare),
+            ClassLoad : Some(class_load),
+            ..Default::default()// 構造体更新記法でセットしないところはこれで楽できる
+        };
+        ((**jvmenv).SetEventCallbacks.unwrap())(jvmenv,&callbacks,std::mem::size_of::<sys::jvmtiEventCallbacks>() as i32);
 
     }
     println!("Hello, JVMTI!");
@@ -57,4 +59,25 @@ pub extern "C" fn Agent_OnLoad(
 #[no_mangle]
 pub extern "C" fn Agent_OnUnload(){
     println!("Good bye.");
+}
+#[no_mangle]
+unsafe extern "C" fn class_load(jvmti_env: *mut sys::jvmtiEnv,_jni_env: *mut sys::JNIEnv,_thread: sys::jthread,klass: sys::jclass,){
+    let mut pchar = std::ptr::null_mut();
+    let _ret = ((**jvmti_env).GetSourceFileName.unwrap())(jvmti_env,klass,&mut pchar);
+    let pchar = CStr::from_ptr(pchar);
+
+    let mut pchar1 = std::ptr::null_mut();
+    let mut pchar2 = std::ptr::null_mut();
+    let _ret = ((**jvmti_env).GetClassSignature.unwrap())(jvmti_env,klass,&mut pchar1,&mut pchar2);
+
+    let pchar1 = CStr::from_ptr(pchar1);
+    println!("Class Load[{}][{}]",pchar.to_str().unwrap().to_string(),pchar1.to_str().unwrap().to_string());
+}
+
+#[no_mangle]
+unsafe extern "C" fn class_prepare(jvmti_env: *mut sys::jvmtiEnv,_jni_env: *mut sys::JNIEnv,_thread: sys::jthread,klass: sys::jclass,){
+    let mut pchar = std::ptr::null_mut();
+    let _ret = ((**jvmti_env).GetSourceFileName.unwrap())(jvmti_env,klass,&mut pchar);
+    let _pchar = CStr::from_ptr(pchar);
+    //println!("Class Prepare[{}]",pchar.to_str().unwrap().to_string());
 }
