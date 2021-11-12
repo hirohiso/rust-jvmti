@@ -6,11 +6,12 @@ fn main() {
     const INCLUDE: &str = "/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home/include";
     const INCLUDE_LINUX: &str = "/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home/include/darwin";
 
+    //https://rust-lang.github.io/rust-bindgen/tutorial-3.html
     println!("cargo:rustc-link-lib=jvm");
     println!("cargo:rustc-link-search=native={}", LIB);
 
     let bindings = bindgen::builder()
-        .header_contents("bindings.h", "#include <jvmti.h>")
+        .header_contents("bindings.h", "#include <jvmti.h>")//#include <jvmti.h>という内容のbindings.hを生成する（Diskに保持されない）
         .clang_arg(format!("-I{}", INCLUDE))
         .clang_arg(format!("-I{}", INCLUDE_LINUX))
         .derive_debug(true)
