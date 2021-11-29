@@ -48,8 +48,8 @@ pub extern "C" fn Agent_OnLoad(
         ((**jvmenv).AddCapabilities.unwrap())(jvmenv,&capability);
 
         let callbacks = sys::jvmtiEventCallbacks{
-            ClassPrepare : Some(class_prepare),
-            ClassLoad : Some(class_load),
+            //ClassPrepare : Some(class_prepare),
+            //ClassLoad : Some(class_load),
             ClassFileLoadHook: Some(class_file_load_hook),
             ..Default::default()
         };// 構造体更新記法でデフォルなところはこれで楽できる

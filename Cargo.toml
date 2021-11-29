@@ -1,5 +1,5 @@
 [package]
-name = "Jvm-Hello"
+name = "jvm-hello"
 version = "0.1.0"
 authors = ["hiro <irie.h126@gmail.com>"]
 edition = "2018"
