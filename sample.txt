@@ -1,4 +1,17 @@
- java  -agentpath:**********/libJvm_Hello.dylib=hellod Sample
+cat Main.java                                                                                                                             [~/temp/sample]
+class Main {
+	public static void main(String[] args) {
+		System.out.println("Hello World.");
+	}
+}
+
+
+
+javac Main.java                                                                                                                           [~/temp/sample]
+ls                                                                                                                                        [~/temp/sample]
+Main.class		Main.java		libJvm_Hello.dylib
+
+java  -agentpath:./libJvm_Hello.dylib=hellod Main                                                                                         [~/temp/sample]
 not null
 hellod
 ===========================
@@ -58,7 +71,7 @@ Class file Load[java/security/AllPermission][size=1234]
 Class file Load[java/security/UnresolvedPermission][size=9215]
 Class file Load[java/security/SecureClassLoader$DebugHolder][size=651]
 Class file Load[sun/security/util/Debug][size=8181]
-Class file Load[Sample][size=522]
+Class file Load[Main][size=414]
 Class file Load[java/lang/NamedPackage][size=2157]
 Class file Load[java/lang/Class$ReflectionData][size=1225]
 Class file Load[java/lang/Class$Atomic][size=2516]
@@ -72,7 +85,7 @@ Class file Load[java/lang/Readable][size=197]
 Class file Load[java/nio/CharBuffer][size=10673]
 Class file Load[java/nio/HeapCharBuffer][size=6104]
 Class file Load[java/nio/charset/CoderResult][size=4455]
-Hello Sample
+Hello World.
 Class file Load[jdk/internal/misc/TerminatingThreadLocal$1][size=999]
 Class file Load[java/lang/Shutdown][size=2722]
 Class file Load[java/lang/Shutdown$Lock][size=360]
