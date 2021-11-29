@@ -31,7 +31,6 @@ pub extern "C" fn Agent_OnLoad(
             ..Default::default()
         };
         capability.set_can_get_source_file_name(1);
-        capability.set_can_generate_all_class_hook_events(1);
         
         ((**jvmenv).AddCapabilities.unwrap())(jvmenv,&capability);
 
