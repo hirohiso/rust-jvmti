@@ -2,7 +2,8 @@
 name = "jvm-hello"
 version = "0.1.0"
 authors = ["hiro <irie.h126@gmail.com>"]
-edition = "2018"
+edition = "2021"
+rust-version = "1.70"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -12,4 +13,4 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [build-dependencies]
-bindgen = "0.59.1"
+bindgen = "0.72.0"
